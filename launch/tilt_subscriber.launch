@@ -55,20 +55,8 @@
     pkg="hokuyo_node"
     type="hokuyo_node"
     output="screen">
-
-    <rosparam>
-      min_ang: -2.0071
-      max_ang: 2.0071
-      intensity: true
-    </rosparam>
   </node>
 
-  <node
-    name="hokuyo_robot_filter"
-    pkg="spin_hokuyo"
-    type="hokuyo_robot_filter"
-    output="screen"
-  />
 
   <node
     name="scan_to_pcl"
@@ -77,7 +65,7 @@
   />
 
     <param name="assembled_cloud_mode" type="string" value="subscriber" />
-    <param name="scan_time" type="double" value="5" />
+    <param name="scan_time" type="double" value="15" />
     <arg name="assemble" default="velodyne_points"/> 
 
   <node type="point_cloud2_assembler" pkg="laser_assembler"  name="pcl_assembler_server">

@@ -38,15 +38,15 @@ void hokuyo_callbacks(const sensor_msgs::LaserScan::ConstPtr& scan_in)
 
     // Add inf points
     for(int i=0;i<scan_in->ranges.size();i++) {
-        if(isnan(scan_in->ranges[i])) {
-            double r = scan_in->ranges[i];
+        if(isinf(scan_in->ranges[i])) {
+            double r = 30.0;
             double theta = scan_in->angle_min + double(i) * scan_in->angle_increment;
             fake_hit.x = r * cos(theta);
             fake_hit.y = r * sin(theta);
             fake_hit.z = 0;
             fake_hit.intensity = -1.0;
+            cloud2->push_back(fake_hit);
         }
-        cloud2->push_back(fake_hit);
     }
 
     // convert pcl2 back to message
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
     ros::NodeHandle nh;
 
     ros::Subscriber hokuyo_sub;
-    hokuyo_sub = nh.subscribe<sensor_msgs::LaserScan>("/hokuyo_filtered", 1, hokuyo_callbacks);
+    hokuyo_sub = nh.subscribe<sensor_msgs::LaserScan>("/scan", 1, hokuyo_callbacks);
 
     
     pcl_from_scan = nh.advertise<PointCloud>("hokuyo_points", 1);

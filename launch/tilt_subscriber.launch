@@ -59,6 +59,7 @@
     <rosparam>
       min_ang: -2.0071
       max_ang: 2.0071
+      intensity: true
     </rosparam>
   </node>
 

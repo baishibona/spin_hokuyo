@@ -23,18 +23,28 @@ using namespace std;
 
 ros::Publisher pcl_from_scan;
 
-typedef pcl::PointCloud<pcl::PointXYZ> PointCloud;
+// typedef pcl::PointCloud<pcl::PointXYZI> PointCloud;
 laser_geometry::LaserProjection projector;
 
 void hokuyo_callbacks(const sensor_msgs::LaserScan::ConstPtr& scan_in)
 {
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZI>());
+    pcl::PointCloud<pcl::PointXYZ>::Ptr scan_cloud(new pcl::PointCloud<pcl::PointXYZ>());
     pcl::PointXYZI fake_hit;
     sensor_msgs::PointCloud2 cloud;
     projector.projectLaser(*scan_in, cloud);
 
     // convert message to pcl2
-    pcl::fromROSMsg(cloud, *cloud2);
+    pcl::fromROSMsg(cloud, *scan_cloud);
+
+    for(int i=0;i<scan_cloud->size();i++) {
+        pcl::PointXYZI p;
+        p.x = scan_cloud->at(i).x;
+        p.y = scan_cloud->at(i).y;
+        p.z = scan_cloud->at(i).z;
+        p.intensity = 1.0;
+        cloud2->push_back(p);
+    }
 
     // Add inf points
     for(int i=0;i<scan_in->ranges.size();i++) {
@@ -56,6 +66,7 @@ void hokuyo_callbacks(const sensor_msgs::LaserScan::ConstPtr& scan_in)
     cloud.header.frame_id = "/laser";
     cloud.header.stamp = scan_in->header.stamp;
     pcl_from_scan.publish(cloud);
+
 }
 
 int main(int argc, char **argv) {
@@ -66,7 +77,7 @@ int main(int argc, char **argv) {
     hokuyo_sub = nh.subscribe<sensor_msgs::LaserScan>("/scan", 1, hokuyo_callbacks);
 
     
-    pcl_from_scan = nh.advertise<PointCloud>("hokuyo_points", 1);
+    pcl_from_scan = nh.advertise<pcl::PointCloud<pcl::PointXYZI>>("hokuyo_points", 1);
 
     while (ros::ok())
     {

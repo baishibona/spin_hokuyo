@@ -138,7 +138,7 @@ int main(int argc, char **argv) {
     pause_time = pause;
 
     //Wait for servo init by waiting for /state topic
-    ros::topic::waitForMessage<dynamixel_msgs::JointState>("/tilt_controller/state", ros::Duration(100));
+    ros::topic::waitForMessage<dynamixel_msgs::JointState>("/tilt_controller/state", ros::Duration(10));
 
     //subscribe to empty message to run sweep
     ros::Subscriber sub=nh.subscribe("/perform_sweep", 1, &sweep);
